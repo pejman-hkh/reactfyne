@@ -1,0 +1,8 @@
+Website = "https://github.com/pejman-hkh/reactfyne"
+
+[Details]
+  Icon = "Icon.png"
+  Name = "ReactFyne"
+  ID = "com.github.pejman-hkh.reactfyne"
+  Version = "0.1.0"
+  Build = 2

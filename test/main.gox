@@ -1,0 +1,104 @@
+package main
+
+import (
+    "reflect"
+    "fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
+)
+
+func Invoke(obj any, name string, args ...any) []reflect.Value {
+	inputs := make([]reflect.Value, len(args))
+	for i, _ := range args {
+		inputs[i] = reflect.ValueOf(args[i])
+	}
+
+	return reflect.ValueOf(obj).MethodByName(name).Call(inputs)
+}
+
+type Gox struct {
+	Obj any
+}
+
+func (g *Gox) Run(name string, props map[string]string, childs []any) any {
+
+	if name == "f" {
+		return childs
+	} else {
+		rf := Invoke(g.Obj, name, props, childs)
+		return rf[0].Interface().(any)
+	}
+}
+
+type React struct{}
+var react Gox = Gox{&React{}}
+
+func (r *React) Button(props map[string]string, children []any) any {
+	return widget.NewButton(children[0].(string), func() {})
+}
+
+func (r *React) Label(props map[string]string, children []any) any {
+	return widget.NewLabel(children[0].(string))
+}
+
+func (r *React) ToFyneObjec(children []any) []fyne.CanvasObject {
+	var pass []fyne.CanvasObject
+	for _, v := range children {
+		var d fyne.CanvasObject
+		if reflect.TypeOf(v).String() == "string" {
+			d = widget.NewLabel(v.(string))
+		} else {
+			d = v.(fyne.CanvasObject)
+		}
+		pass = append(pass, d)
+	}
+	return pass
+}
+
+func(r *React) Option(props map[string]string, children []any) any {
+    return children
+}
+
+func(r *React) Select(props map[string]string, children []any) any {
+    return  widget.NewSelect([]string{"Option 1", "Option 2"}, func(value string) {
+		
+	})
+}
+
+func(r *React) Checkbox(props map[string]string, children []any) any {
+    return  widget.NewCheck("Optional", func(value bool) {
+		
+	})
+}
+
+func (r *React) VBox(props map[string]string, children []any) any {
+	pass := r.ToFyneObjec(children)
+	return container.NewVBox(pass...)
+}
+
+func (r *React) Window(props map[string]string, children []any) any {
+	pass := r.ToFyneObjec(children)
+
+	a := app.New()
+	w := a.NewWindow("Hello")
+	w.SetContent(container.NewVBox(pass...))
+	w.ShowAndRun()
+	return nil
+}
+
+func render() any {
+    return <Window>
+        <Label name="label">Hello Fyne!</Label>
+        <Button onClick="func() {}">Hi</Button>
+        <Select>
+            <Option>test</Option>
+            <Option>test1</Option>
+        </Select>
+        <Checkbox></Checkbox>
+    </Window>
+}
+
+func main() {
+	render()
+}
