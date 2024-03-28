@@ -1,4 +1,4 @@
-module github.com/able8/base64-encoder-decoder
+module reactfyne
 
 go 1.20
 
